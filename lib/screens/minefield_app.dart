@@ -13,7 +13,7 @@ class MineFieldApp extends StatefulWidget {
 
 class _MineFieldAppState extends State<MineFieldApp> {
   bool _win;
-  Board _board = Board(lines: 12, columns: 12, amoutOfMines: 3);
+  Board _board;
 
   void _restart() {
     setState(() {
@@ -23,15 +23,14 @@ class _MineFieldAppState extends State<MineFieldApp> {
   }
 
   void _open(Field field) {
-    if (_win != null){
+    if (_win != null) {
       return;
     }
     setState(() {
       try {
         field.open();
-        if(_board.isSolved){
-          _win= true;
-
+        if (_board.isSolved) {
+          _win = true;
         }
       } on ExplosionException {
         _win = false;
@@ -41,15 +40,27 @@ class _MineFieldAppState extends State<MineFieldApp> {
   }
 
   void _swapMark(Field field) {
-    if (_win != null){
+    if (_win != null) {
       return;
     }
     setState(() {
       field.changeMark();
-      if (_board.isSolved){
+      if (_board.isSolved) {
         _win = true;
       }
     });
+  }
+
+  Board _getBoard(double height, double width) {
+    if (_board == null) {
+      int amountColumns = 15;
+      double sizeOfField = width / amountColumns;
+      int amountLines = (height / sizeOfField).floor();
+
+      _board =
+          Board(lines: amountLines, columns: amountColumns, amoutOfMines: 30);
+    }
+    return _board;
   }
 
   @override
@@ -61,10 +72,14 @@ class _MineFieldAppState extends State<MineFieldApp> {
         onRestart: _restart,
       ),
       body: Container(
-        child: BoardWidget(
-          board: _board,
-          onOpen: _open,
-          onSwapMark: _swapMark,
+        color: Colors.grey,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return BoardWidget(
+                board: _getBoard(constraints.maxHeight, constraints.maxWidth),
+                onOpen: _open,
+                onSwapMark: _swapMark);
+          },
         ),
       ),
     ));
