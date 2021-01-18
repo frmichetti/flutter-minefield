@@ -1,53 +1,72 @@
 import 'package:flutter/material.dart';
+import 'package:minefield/components/board_widget.dart';
 import 'package:minefield/components/result_widget.dart';
 import 'package:minefield/components/field_widget.dart';
+import 'package:minefield/models/board.dart';
 import 'package:minefield/models/explosion_exception.dart';
 import 'package:minefield/models/field.dart';
 
-class MineFieldApp extends StatelessWidget {
+class MineFieldApp extends StatefulWidget {
+  @override
+  _MineFieldAppState createState() => _MineFieldAppState();
+}
+
+class _MineFieldAppState extends State<MineFieldApp> {
+  bool _win;
+  Board _board = Board(lines: 12, columns: 12, amoutOfMines: 3);
 
   void _restart() {
-    print("Clickou aqui");
+    setState(() {
+      _win = null;
+      _board.restart();
+    });
   }
 
   void _open(Field field) {
-    print("Clickou em Abrir");
+    if (_win != null){
+      return;
+    }
+    setState(() {
+      try {
+        field.open();
+        if(_board.isSolved){
+          _win= true;
+
+        }
+      } on ExplosionException {
+        _win = false;
+        _board.revealMines();
+      }
+    });
   }
 
   void _swapMark(Field field) {
-    print("Clickou em Trocar marcação");
+    if (_win != null){
+      return;
+    }
+    setState(() {
+      field.changeMark();
+      if (_board.isSolved){
+        _win = true;
+      }
+    });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
-    Field field = Field(line: 0, column: 0);
-    Field field2 = Field(line: 1, column: 0);
-    field2.doMine();
-    field.addNeighbor(field2);
-
-    try{
-      field.changeMark();
-    }on ExplosionException {
-
-    }
-
     return MaterialApp(
-      home: Scaffold(
-        appBar: ResultWidget(
-          win: null,
-          onRestart: _restart,
-        ),
-          body: Container(
-          child: FieldWidget(
-            field: field,
-            onOpen: _open,
-            onSwapMark: _swapMark,
-          ),
+        home: Scaffold(
+      appBar: ResultWidget(
+        win: _win,
+        onRestart: _restart,
       ),
-      )
-    );
+      body: Container(
+        child: BoardWidget(
+          board: _board,
+          onOpen: _open,
+          onSwapMark: _swapMark,
+        ),
+      ),
+    ));
   }
-
 }
