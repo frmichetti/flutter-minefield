@@ -66,7 +66,7 @@ class Board {
     return _fields;
   }
 
-  bool get solved {
+  bool get isSolved {
     return _fields.every((f) => f.isSolved);
   }
 
