@@ -66,22 +66,42 @@ class _MineFieldAppState extends State<MineFieldApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        home: Scaffold(
-      appBar: ResultWidget(
-        win: _win,
-        onRestart: _restart,
+      theme: ThemeData(
+        primaryColor: Colors.grey[800],
+        accentColor: Colors.grey[600],
       ),
-      body: Container(
-        color: Colors.grey,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return BoardWidget(
-                board: _getBoard(constraints.maxHeight, constraints.maxWidth),
-                onOpen: _open,
-                onSwapMark: _swapMark);
-          },
-        ),
+        home: Scaffold(
+      appBar: AppBar(
+        title: Text("MineField"),
+      ),
+      body: Column(
+        children: [
+          gameBar(),
+          Expanded(
+              child: Container(
+            color: Colors.grey,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return boardGame(constraints);
+              },
+            ),
+          ))
+        ],
       ),
     ));
+  }
+
+  Widget gameBar() {
+    return ResultWidget(
+      win: _win,
+      onRestart: _restart,
+    );
+  }
+
+  Widget boardGame(constraints) {
+    return BoardWidget(
+        board: _getBoard(constraints.maxHeight, constraints.maxWidth),
+        onOpen: _open,
+        onSwapMark: _swapMark);
   }
 }

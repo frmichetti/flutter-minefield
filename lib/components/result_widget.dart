@@ -30,6 +30,7 @@ class ResultWidget extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.grey,
+      width: double.infinity,
       child: Container(
         padding: EdgeInsets.all(10),
         child: CircleAvatar(
