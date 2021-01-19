@@ -17,11 +17,12 @@ class _MineFieldAppState extends State<MineFieldApp> {
 
   bool _win;
   Board _board;
+  int _amountOfMines = 30;
 
-  void _restart() {
+  void _restart(int amountOfMines) {
     setState(() {
       _win = null;
-      _board.restart();
+      _board.restart(amountOfMines);
     });
   }
 
@@ -54,14 +55,14 @@ class _MineFieldAppState extends State<MineFieldApp> {
     });
   }
 
-  Board _getBoard(double height, double width) {
+  Board _getBoard(double height, double width, int amountOfMines) {
     if (_board == null) {
       int amountColumns = 15;
       double sizeOfField = width / amountColumns;
       int amountLines = (height / sizeOfField).floor();
 
       _board =
-          Board(lines: amountLines, columns: amountColumns, amoutOfMines: 30);
+          Board(lines: amountLines, columns: amountColumns, amoutOfMines: amountOfMines);
     }
     return _board;
   }
@@ -95,7 +96,7 @@ class _MineFieldAppState extends State<MineFieldApp> {
                 color: Colors.grey,
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    return boardGame(constraints);
+                    return boardGame(constraints, _amountOfMines);
                   },
                 ),
               ))
@@ -107,24 +108,28 @@ class _MineFieldAppState extends State<MineFieldApp> {
   Widget gameBar() {
     return ResultWidget(
       win: _win,
-      onRestart: _restart,
+      onRestart: () =>_restart(_amountOfMines),
     );
   }
 
-  Widget boardGame(constraints) {
+  Widget boardGame(constraints, amountOfMines) {
     return BoardWidget(
-        board: _getBoard(constraints.maxHeight, constraints.maxWidth),
+        board: _getBoard(constraints.maxHeight, constraints.maxWidth,  amountOfMines),
         onOpen: _open,
         onSwapMark: _swapMark);
   }
 
   void testAlert(BuildContext context) {
+    final number = TextEditingController();
+    number.text = _amountOfMines.toString();
+
     var alert = AlertDialog(
       title: Text("How Many Mines ?"),
       content: Container(
           width: 280,
           padding: EdgeInsets.all(10.0),
           child: TextField(
+            controller: number,
             autocorrect: true,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(hintText: 'Enter Your Number Here'),
@@ -133,6 +138,11 @@ class _MineFieldAppState extends State<MineFieldApp> {
         FlatButton(
           child: Text("OK"),
           onPressed: () {
+            var value = number.value.text;
+            setState(() {
+              _amountOfMines = int.parse(value);
+              _board.restart(_amountOfMines);
+            });
             Navigator.pop(context);
           },
         ),

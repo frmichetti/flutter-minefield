@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 class Board {
   final int lines;
   final int columns;
-  final int amoutOfMines;
+  int amoutOfMines;
 
   final List<Field> _fields = [];
 
@@ -20,7 +20,8 @@ class Board {
     _sortMines();
   }
 
-  void restart() {
+  void restart(int amoutOfMines) {
+    this.amoutOfMines = amoutOfMines;
     _fields.forEach((f) => f.restart());
     _sortMines();
   }
@@ -43,6 +44,10 @@ class Board {
         field.addNeighbor(neighbor);
       }
     }
+  }
+
+  void changeMines(int amountOfMines) {
+    this.amoutOfMines = amountOfMines;
   }
 
   void _sortMines(){
