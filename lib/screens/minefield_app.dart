@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:minefield/components/board_widget.dart';
 import 'package:minefield/components/result_widget.dart';
@@ -12,6 +13,8 @@ class MineFieldApp extends StatefulWidget {
 }
 
 class _MineFieldAppState extends State<MineFieldApp> {
+  final navigatorKey = GlobalKey<NavigatorState>();
+
   bool _win;
   Board _board;
 
@@ -66,6 +69,7 @@ class _MineFieldAppState extends State<MineFieldApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        navigatorKey: navigatorKey,
         theme: ThemeData(
           primaryColor: Colors.grey[800],
           accentColor: Colors.grey[600],
@@ -79,7 +83,8 @@ class _MineFieldAppState extends State<MineFieldApp> {
                     Icons.settings,
                     color: Colors.white,
                   ),
-                  onPressed: () {}),
+                  onPressed: () =>
+                      testAlert(navigatorKey.currentState.overlay.context)),
             ],
           ),
           body: Column(
@@ -111,5 +116,33 @@ class _MineFieldAppState extends State<MineFieldApp> {
         board: _getBoard(constraints.maxHeight, constraints.maxWidth),
         onOpen: _open,
         onSwapMark: _swapMark);
+  }
+
+  void testAlert(BuildContext context) {
+    var alert = AlertDialog(
+      title: Text("How Many Mines ?"),
+      content: Container(
+          width: 280,
+          padding: EdgeInsets.all(10.0),
+          child: TextField(
+            autocorrect: true,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(hintText: 'Enter Your Number Here'),
+          )),
+      actions: [
+        FlatButton(
+          child: Text("OK"),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        });
   }
 }
